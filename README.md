@@ -1,7 +1,7 @@
 # Feedback-Based Shape Control of Deformable Linear Objects via a Simplified Model
 
 **Research Practice – Technical University of Munich**  
-Rémy Tribout · 03813035 · April 2026
+Rémy Tribout · April 2026
 
 ---
 
