@@ -1,0 +1,94 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="y3GQ-mM_w5ZkBB-VgBmg" name="Page-1">
+    <mxGraphModel dx="808" dy="425" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;" value="&lt;b&gt;Inputs&lt;/b&gt;&lt;br&gt;initial state (straight rod)&lt;div&gt;n&lt;sub&gt;0&lt;/sub&gt;&amp;nbsp;and m&lt;sub&gt;0&lt;/sub&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="160" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" value="&lt;b&gt;1. Static equilibrium +&amp;nbsp;&lt;/b&gt;&lt;div&gt;&lt;b&gt;Integration on [0,L]&lt;/b&gt;&lt;br&gt;dn/ds = −f&amp;nbsp;&lt;div&gt;dm/ds = −&lt;span class=&quot;Yjhzub&quot; data-sfc-root=&quot;c&quot; data-sfc-cb=&quot;&quot; data-processed=&quot;true&quot; style=&quot;font-family: &amp;quot;Google Sans&amp;quot;, Arial, sans-serif; text-align: start;&quot;&gt;&lt;font style=&quot;font-size: 12px; color: rgb(0, 0, 0);&quot;&gt;ṗ&lt;/font&gt;&lt;/span&gt;&amp;nbsp;× m&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="220" x="230" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" value="&lt;b&gt;2. Constitutive laws&lt;/b&gt;&lt;br&gt;&lt;div&gt;v =&amp;nbsp;&lt;span style=&quot;font-family: Arial, sans-serif; text-align: start;&quot;&gt;&lt;font style=&quot;font-size: 12px; color: rgb(0, 0, 0);&quot;&gt;ṽ&lt;/font&gt;&lt;/span&gt;&amp;nbsp;+ K&lt;sub&gt;tra&lt;/sub&gt;⁻¹&amp;nbsp;Rᵀn&lt;br&gt;u = ũ + K&lt;font size=&quot;1&quot;&gt;&lt;sub&gt;rot&lt;/sub&gt;&lt;/font&gt;⁻¹&amp;nbsp;Rᵀm&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="220" x="230" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" value="&lt;b&gt;3. Kinematics +&lt;/b&gt;&lt;div&gt;&lt;b&gt;Integration on [0,L]&lt;br&gt;&lt;/b&gt;dp/ds = Rv&lt;br&gt;dR/ds = R û&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="220" x="230" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" value="&lt;b&gt;4. Elastic energy&lt;/b&gt;&lt;br&gt;E = W&lt;sub&gt;1&lt;/sub&gt;/2L ∫₀ᴸ … ds&lt;br&gt;(integrated along rod)" vertex="1">
+          <mxGeometry height="70" width="220" x="530" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" value="&lt;b&gt;5. Cost function&lt;/b&gt;&lt;br&gt;J = E + W&lt;sub&gt;2&lt;/sub&gt; &lt;font style=&quot;font-size: 12px;&quot;&gt;Σᵢ&lt;/font&gt; min&lt;sub&gt;s&lt;/sub&gt; ‖p(s) − tᵢ‖²&lt;br&gt;(fit to target points tᵢ)" vertex="1">
+          <mxGeometry height="70" width="220" x="530" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=11;" value="&lt;b&gt;6. Homotopy&lt;/b&gt;&lt;br&gt;&lt;div&gt;targets(α) = (1−α)·targets&lt;sub&gt;init&lt;/sub&gt;&lt;br&gt;             + α·targets&lt;sub&gt;final&lt;/sub&gt;&lt;br&gt;(update targets)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="220" x="530" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;" value="&lt;b&gt;Warm-start n(0), m(0)&lt;/b&gt;&lt;br&gt;as initial guess for the&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;next&amp;nbsp;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(51, 51, 51), rgb(193, 193, 193));&quot;&gt;optimization step&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="220" x="530" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="10" edge="1" parent="1" source="2" style="edgeStyle=orthogonalEdgeStyle;" target="3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="11" edge="1" parent="1" source="3" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;" target="4" value="n, m">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="12" edge="1" parent="1" source="4" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;" target="5" value="v, u">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="13" edge="1" parent="1" source="5" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="6" value="p, R, n, m, u, v&#xa;on [0, L]">
+          <mxGeometry relative="1" x="-0.2615" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="510" y="295" />
+              <mxPoint x="510" y="75" />
+            </Array>
+            <mxPoint x="560" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="14" edge="1" parent="1" source="6" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;" target="7" value="E">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="15" edge="1" parent="1" source="7" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;" target="8" value="n(0), m(0) optimized">
+          <mxGeometry relative="1" x="-0.0038" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="16" edge="1" parent="1" source="8" style="edgeStyle=orthogonalEdgeStyle;" target="9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="17" edge="1" parent="1" source="9" style="edgeStyle=orthogonalEdgeStyle;dashed=1;fontSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="3" value="Feedback">
+          <mxGeometry relative="1" x="-0.5145" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="470" y="405" />
+              <mxPoint x="470" y="92" />
+            </Array>
+            <mxPoint x="320" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="18" edge="1" parent="1" source="7" style="edgeStyle=orthogonalEdgeStyle;dashed=1;fontSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;verticalAlign=middle;horizontal=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" target="3" value="BFGS iteration">
+          <mxGeometry relative="1" x="-0.102" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="500" y="185" />
+              <mxPoint x="500" y="58" />
+            </Array>
+            <mxPoint x="210" y="320" as="sourcePoint" />
+            <mxPoint x="480" y="60" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yvm0wVe8o_mbfsu6lPZV-19" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" value="&lt;b&gt;Forward &lt;br&gt;integration&lt;/b&gt;" vertex="1">
+          <mxGeometry height="40" width="80" x="40" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="yvm0wVe8o_mbfsu6lPZV-20" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" value="&lt;b&gt;Objective&amp;nbsp;&lt;/b&gt;&lt;div&gt;&lt;b&gt;evaluation&lt;/b&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="40" width="80" x="40" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="yvm0wVe8o_mbfsu6lPZV-22" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=11;" value="&lt;b&gt;Optimization&lt;/b&gt;&lt;div&gt;&lt;b&gt;strategy&lt;/b&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="41.5" width="80" x="40" y="318.5" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
