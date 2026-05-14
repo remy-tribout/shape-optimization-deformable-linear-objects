@@ -1,48 +1,203 @@
-# Feedback-Based Shape Control of Deformable Linear Objects via a Simplified Model
+# Efficient Shape Optimization of Deformable Linear Objects Using Simplified Models
 
-**Research Practice – Technical University of Munich**  
-Rémy Tribout · April 2026
+**Research Practice - Technical University of Munich**  
+Remy Tribout - April 2026
 
 ---
 
 ## Overview
 
-This project addresses the problem of shape control of **Deformable Linear Objects (DLOs)** — such as cables or flexible rods — in robotic manipulation. DLOs are difficult to model due to their nonlinear continuum mechanics and high-dimensional configuration space.
+This project studies the shape control of **Deformable Linear Objects (DLOs)**, such as cables, elastic rods, or flexible tools, in robotic manipulation. Unlike rigid objects, DLOs have a high-dimensional configuration space and nonlinear mechanics: a small change in boundary actuation can produce a complex global deformation.
 
-The core challenge is a trade-off between **model accuracy** and **computational efficiency**:
-- High-fidelity models (e.g. Cosserat rod) are physically accurate but expensive to solve.
-- Simplified models (e.g. mass-spring) are fast but less accurate.
+The main difficulty is the trade-off between **model accuracy** and **computational efficiency**:
 
-This work aims to bridge this gap through a **feedback-based correction framework**: a simplified model generates a fast initial actuation, which is then iteratively corrected using a high-fidelity reference.
+- High-fidelity models, such as the **Cosserat rod model**, describe the continuous mechanics of the rod accurately, but are more expensive to solve.
+- Simplified models, such as a **mass-spring representation**, are faster and easier to optimize, but only approximate the real deformation.
 
----
-
-## Preliminary Work
-
-A shape optimization algorithm has been implemented based on the **Cosserat rod model**:
-
-- The rod is modeled by its centerline position `p(s)`, orientation `R(s)`, local strain measures `u(s)` and `v(s)`, and internal forces and moments `n(s)` and `m(s)`.
-- Given a set of 3D target points, the algorithm optimizes the boundary conditions `n(0)` and `m(0)` at the clamped end to minimize a cost function combining elastic energy and distance to targets.
-- A **homotopy (continuation) strategy** is used to ensure convergence from the straight rod to the target shape.
-- The optimized tip pose (position, orientation, force, moment) is mapped to a **Franka Emika Panda** robot via inverse kinematics.
-
-![Shape optimization result](results/robot_pose_from_cosserat.png)
+The current objective is to use the simplified model as a **warm start** for the high-fidelity Cosserat optimization. The mass-spring model provides a fast approximate shape or tip pose that should lie close to the desired solution. This initialization can help the Cosserat optimizer start in the right basin of convergence and reduce, or eventually replace, the expensive homotopy strategy.
 
 ---
 
-## Proposed Approach
+## Current State of the Project
 
-The main goal of this research practice is to develop a **feedback-based correction loop** between a simplified model and the Cosserat ground truth:
+Two shape optimization pipelines have been implemented:
 
-1. **Feedforward prediction** – a mass-spring model solves the shape optimization and produces an approximate tip pose.
-2. **High-fidelity evaluation** – the tip pose is applied to the Cosserat model to evaluate the resulting shape.
-3. **Feedback correction** – the shape error is propagated back through a local actuation-to-shape mapping to update the control input.
+1. `src/cosserat.py` - optimization with a continuous Cosserat rod model.
+2. `src/mass_spring.py` - optimization with a discrete mass-spring model.
 
-This loop iterates until convergence, maintaining computational efficiency while recovering physical accuracy.
+The first results are stored in `results/` and compare the optimized shapes obtained with both models for several target configurations. These comparisons are now used to evaluate whether the mass-spring solution is accurate enough to initialize the Cosserat optimization.
 
-### Possible Extensions
-- Coupling the rod tip pose directly with the robot end-effector.
-- Replacing the Cosserat ground truth with a simulated perception model, bringing the framework closer to a real-world scenario.
+---
+
+## Cosserat Rod Optimization
+
+The Cosserat model represents the DLO as a continuous elastic rod parameterized by its arc length `s`.
+
+The rod state contains:
+
+- the centerline position `p(s)`,
+- the orientation frame `R(s)`,
+- the internal force `n(s)`,
+- the internal moment `m(s)`,
+- the shear/extension strain `v(s)`,
+- the bending/torsion strain `u(s)`.
+
+The implementation integrates the static Cosserat equations along the rod:
+
+- `dp/ds = R v`
+- `dR/ds = R hat(u)`
+- `dn/ds = -f_ext`
+- `dm/ds = -dp/ds x n`
+
+The full optimization pipeline is summarized below. The editable diagram is available in `docs/cosserat_pipeline.drawio`.
+
+![Cosserat optimization pipeline](docs/cosserat_pipeline.png)
+
+The unknown control variables are the initial internal force and moment at the clamped end:
+
+```text
+x = [n(0), m(0)]
+```
+
+For a set of 3D target points, the optimizer minimizes a cost function combining:
+
+- elastic deformation energy,
+- distance between the rod centerline and the target points.
+
+A **homotopy / continuation strategy** is currently used to improve convergence. Instead of optimizing directly from the straight rod to the final target configuration, the targets are progressively moved from an initial straight configuration to their final positions. The solution of each step is used as the initialization for the next one.
+
+This strategy is robust, but it is also expensive because it requires solving many intermediate optimization problems. A main direction of the project is therefore to replace this multi-step continuation with a better initial guess obtained from the mass-spring model.
+
+Example result:
+
+![Cosserat shape optimization](results/cosserat_targets1.png)
+
+The Cosserat optimization also extracts the final tip pose, force, moment, and orientation. This information can be used as an interface toward a robot end-effector, for example a Franka Emika Panda.
+
+![Robot pose from Cosserat optimization](results/robot_pose_from_cosserat.png)
+
+---
+
+## Mass-Spring Optimization
+
+The mass-spring model is a simplified discrete approximation of the DLO. The rod is represented by `N = 12` nodes connected by elastic segments.
+
+The first node is clamped at the origin, and the initial tangent direction is imposed by fixing the second node along the `z` axis. The remaining nodes are optimized.
+
+The model energy contains two terms:
+
+- **stretching energy**, penalizing changes in segment length,
+- **bending energy**, penalizing changes in angle between consecutive segments.
+
+The current implementation uses:
+
+```text
+E_total = W1 * E_elastic + W2 * E_targets
+```
+
+where `E_targets` is the squared distance from each target point to the closest node of the discrete rod.
+
+The target points are first resampled into a desired discrete curve using cubic splines. An **Intermediate Shape Generation (ISG)** step then creates intermediate configurations between the straight rod and the desired shape. These intermediate configurations make the optimization more stable, similarly to the homotopy strategy used in the Cosserat pipeline.
+
+Example result:
+
+![Mass-spring shape optimization](results/mass-spring_targets1.png)
+
+The mass-spring pipeline also estimates the final tip pose from the last two nodes. This gives an approximate end-effector pose that can be used to initialize the Cosserat optimization closer to the final solution.
+
+---
+
+## First Results
+
+The current experiments evaluate both models on several target configurations:
+
+- `targets1` - base 3D shape,
+- `targets2` - C-shape,
+- `targets3` - S-shape.
+
+The Cosserat solver produces smooth continuous shapes and serves as the high-fidelity reference. The mass-spring solver produces a coarser but computationally simpler approximation of the same target shape.
+
+For the first target configuration, the comparison between both optimized shapes shows that the mass-spring model follows the Cosserat result closely:
+
+![Cosserat vs mass-spring comparison](results/comparison_targets1.png)
+
+For `targets1`, the measured deviation between the Cosserat and mass-spring centerlines is:
+
+```text
+mean error = 2.78 mm
+max error  = 4.54 mm
+```
+
+This is a promising first result: the simplified model captures the main deformation trend with millimeter-level error for this scenario. However, this comparison is still preliminary. The goal is not to replace the Cosserat model with the mass-spring model, but to use the mass-spring solution as a fast initialization for the more accurate Cosserat optimization.
+
+---
+
+## Planned Warm-Start Framework
+
+The next step is to connect the two implemented models in a sequential optimization pipeline:
+
+1. **Fast simplified optimization**  
+   The mass-spring model solves the target shape optimization and outputs an approximate discrete shape and tip pose.
+
+2. **Cosserat initialization**  
+   The mass-spring result is converted into an initial guess for the Cosserat optimization, for example through the final tip pose, an approximate boundary wrench, or an interpolated centerline.
+
+3. **Direct high-fidelity optimization**  
+   The Cosserat optimizer starts from this mass-spring-based initialization instead of starting from the straight rod.
+
+4. **Reduced or removed homotopy**  
+   If the initialization is close enough to the final solution, the Cosserat optimization may converge with fewer continuation steps, or without homotopy.
+
+5. **Benchmarking**  
+   The resulting method is compared against the current Cosserat-only homotopy pipeline in terms of convergence, computation time, and final shape error.
+
+The goal is to obtain an optimization algorithm faster than Cosserat alone, while keeping the final accuracy of the high-fidelity model.
+
+---
+
+## Repository Structure
+
+```text
+.
+|-- docs/
+|   |-- Preliminary_Slides.pdf
+|   |-- Premilinary_Note.pdf
+|   |-- cosserat_pipeline.drawio
+|   `-- cosserat_pipeline.png
+|-- results/
+|   |-- cosserat_targets1.png
+|   |-- cosserat_targets2.png
+|   |-- cosserat_targets3.png
+|   |-- mass-spring_targets1.png
+|   |-- mass-spring_targets2.png
+|   |-- mass-spring_targets3.png
+|   |-- comparison_targets1.png
+|   `-- robot_pose_from_cosserat.png
+|-- src/
+|   |-- cosserat.py
+|   `-- mass_spring.py
+`-- README.md
+```
+
+---
+
+## Running the Code
+
+The scripts are written in Python and use `numpy`, `scipy`, and `matplotlib`.
+
+Run the Cosserat optimization:
+
+```bash
+python src/cosserat.py
+```
+
+Run the mass-spring optimization:
+
+```bash
+python src/mass_spring.py
+```
+
+Each script currently contains the model parameters and target points directly in the file. Future work could move these parameters to a shared configuration file to make comparisons between scenarios easier.
 
 ---
 
