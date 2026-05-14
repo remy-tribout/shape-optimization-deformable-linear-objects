@@ -26,7 +26,7 @@ A shape optimization algorithm has been implemented based on the **Cosserat rod 
 - A **homotopy (continuation) strategy** is used to ensure convergence from the straight rod to the target shape.
 - The optimized tip pose (position, orientation, force, moment) is mapped to a **Franka Emika Panda** robot via inverse kinematics.
 
-![Shape optimization result](results/preliminary_results.png)
+![Shape optimization result](results/robot_pose_from_cosserat.png)
 
 ---
 
