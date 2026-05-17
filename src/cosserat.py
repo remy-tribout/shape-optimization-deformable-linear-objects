@@ -26,53 +26,6 @@ v_ref = np.array([0.0, 0.0, 1.0])
 u_ref = np.array([0.0, 0.0, 0.0])
 f_ext = np.array([0.0, 0.0, -rho*A*g])
 
-# Weights
-W1 = 1
-W2 = 100
-
-def hat(v):
-    return np.array([[0,-v[2],v[1]],[v[2],0,-v[0]],[-v[1],v[0],0]])
-
-# Cosserat equations
-def cosserat_ode(s, y):
-    R = y[3:12].reshape((3,3))
-    n, m = y[12:15], y[15:18]
-    v = v_ref + K_se_inv @ (R.T @ n)
-    u = u_ref + K_bt_inv @ (R.T @ m)
-    dpds = R @ v
-    dRds = R @ hat(u)
-    dnds = -f_ext
-    dmds = -np.cross(dpds, n)
-    return np.concatenate([dpds, dRds.flatten(), dnds, dmds])
-
-# Integration
-def integrate_rod(n0, m0):
-    y0  = np.concatenate([np.zeros(3), np.eye(3).flatten(), n0, m0])
-    return solve_ivp(cosserat_ode, [0, L], y0, t_eval=np.linspace(0,L,200),
-                     method='RK45', rtol=1e-8, atol=1e-10)
-
-# Elastic energy
-def elastic_energy(sol):
-    s, y = sol.t, sol.y
-    integrand = np.zeros(len(s))
-    for i in range(len(s)):
-        R  = y[3:12,i].reshape((3,3))
-        v  = v_ref + K_se_inv @ (R.T @ y[12:15,i])
-        u  = u_ref + K_bt_inv @ (R.T @ y[15:18,i])
-        dv, du = v - v_ref, u - u_ref
-        integrand[i] = dv @ K_se @ dv + du @ K_bt @ du
-    return (W1 / (2*L)) * np.trapz(integrand, s)
-
-# Distance
-def dist_targets(sol, targets):
-    p = sol.y[0:3,:].T
-    return sum(np.min(np.sum((p - t)**2, axis=1)) for t in targets)
-
-# Cost function
-def cost(x, targets):
-    sol = integrate_rod(x[0:3], x[3:6])
-    return elastic_energy(sol) + W2 * dist_targets(sol, targets)
-
 # Targets
 TARGETS = {
     1: {
@@ -121,7 +74,53 @@ targets_init  = np.column_stack([
 
 print(f"Scénario {SCENARIO} : {TARGETS[SCENARIO]['name']}")
 print(f"targets_final :\n{targets_final}")
-print(f"targets_init  :\n{targets_init}")
+
+# Weights
+W1 = 1
+W2 = 100
+
+def hat(v):
+    return np.array([[0,-v[2],v[1]],[v[2],0,-v[0]],[-v[1],v[0],0]])
+
+# Cosserat equations
+def cosserat_ode(s, y):
+    R = y[3:12].reshape((3,3))
+    n, m = y[12:15], y[15:18]
+    v = v_ref + K_se_inv @ (R.T @ n)
+    u = u_ref + K_bt_inv @ (R.T @ m)
+    dpds = R @ v
+    dRds = R @ hat(u)
+    dnds = -f_ext
+    dmds = -np.cross(dpds, n)
+    return np.concatenate([dpds, dRds.flatten(), dnds, dmds])
+
+# Integration
+def integrate_rod(n0, m0):
+    y0  = np.concatenate([np.zeros(3), np.eye(3).flatten(), n0, m0])
+    return solve_ivp(cosserat_ode, [0, L], y0, t_eval=np.linspace(0,L,200),
+                     method='RK45', rtol=1e-8, atol=1e-10)
+
+# Elastic energy
+def elastic_energy(sol):
+    s, y = sol.t, sol.y
+    integrand = np.zeros(len(s))
+    for i in range(len(s)):
+        R  = y[3:12,i].reshape((3,3))
+        v  = v_ref + K_se_inv @ (R.T @ y[12:15,i])
+        u  = u_ref + K_bt_inv @ (R.T @ y[15:18,i])
+        dv, du = v - v_ref, u - u_ref
+        integrand[i] = dv @ K_se @ dv + du @ K_bt @ du
+    return (W1 / (2*L)) * np.trapz(integrand, s)
+
+# Distance
+def dist_targets(sol, targets):
+    p = sol.y[0:3,:].T
+    return sum(np.min(np.sum((p - t)**2, axis=1)) for t in targets)
+
+# Cost function
+def cost(x, targets):
+    sol = integrate_rod(x[0:3], x[3:6])
+    return elastic_energy(sol) + W2 * dist_targets(sol, targets)
 
 # Homotopy
 N_steps = 20
@@ -138,7 +137,7 @@ for k in range(N_steps + 1):
     if k % 5 == 0:
         sol_k = integrate_rod(x[:3], x[3:])
         shapes_to_plot[alpha] = sol_k.y[0:3, :]
-        print(f"étape {k:2d}/{N_steps} (alpha={alpha:.2f}): coût={result.fun:.5f}")
+        print(f"step {k:2d}/{N_steps} (alpha={alpha:.2f}): cost={result.fun:.5f}")
 
 print(f"\nComputation time: {time.time() - t_start:.3f} s")
 print("\nn(0) =", result.x[0:3])
@@ -147,6 +146,7 @@ print("m(0) =", result.x[3:6])
 sol = integrate_rod(result.x[0:3], result.x[3:6])
 p = sol.y[0:3,:]
 
+# Visualization
 fig = plt.figure()
 ax  = fig.add_subplot(projection='3d')
 
@@ -171,7 +171,7 @@ ax.set_xlim(-0.05, 0.25)
 ax.set_ylim(-0.15, 0.15)
 ax.set_zlim(0.0, 0.30)
 ax.legend(fontsize=7)
-ax.set_title(f"Homotopy progression — {TARGETS[SCENARIO]['name']}")
+plt.savefig("cosserat_result.png", dpi=150)
 plt.show()
 
 # Save
@@ -182,7 +182,7 @@ R_L = sol.y[3:12, -1].reshape((3, 3))
 F_global = R_L @ n_L     
 M_global = R_L @ m_L 
 
-np.savez('resultats_cosserat.npz',
+np.savez('cosserat_results.npz',
          p        = sol.y[0:3, :],
          s        = sol.t,
          n_L      = n_L,

@@ -19,11 +19,54 @@ k_b = E * Ix / l_s
 p_encas = np.array([0.0, 0.0, 0.0])
 t0_enc = np.array([0.0, 0.0, 1.0])
 
-targets_final = np.array([
+# Targets
+TARGETS = {
+    1: {
+        "name": "Base shape",
+        "targets": np.array([
             [0.02, 0.02, 0.068],
             [0.07, 0.05, 0.120],
             [0.20, 0.10, 0.104],
         ])
+    },
+    2: {
+        "name": "C-shape",
+        "targets": np.array([
+            [0.04, 0.00, 0.08],
+            [0.10, 0.00, 0.14],
+            [0.08, 0.00, 0.22],
+        ])
+    },
+    3: {
+        "name": "S-shape",
+        "targets": np.array([
+            [0.05,  0.03, 0.08],
+            [0.10, -0.04, 0.15],
+            [0.15,  0.05, 0.22],
+        ])
+    },
+    4: {
+        "name": "J-shape",
+        "targets": np.array([
+            [0.02, 0.01, 0.10],
+            [0.06, 0.02, 0.18],
+            [0.12, 0.03, 0.24],
+        ])
+    },
+}
+
+# Select target
+SCENARIO = 1 
+
+targets_final = TARGETS[SCENARIO]["targets"]
+targets_init = np.column_stack([
+    np.zeros(len(targets_final)),
+    np.zeros(len(targets_final)),
+    targets_final[:, 2]
+])
+
+print(f"Scénario {SCENARIO} : {TARGETS[SCENARIO]['name']}")
+print(f"targets_final :\n{targets_final}")
 
 # Weights
 W1 = 1 
@@ -70,7 +113,6 @@ def solve_equilibrium(p_init_free):
 # Distance
 def dist_targets(p, targets):
     return sum(np.min(np.sum((p - t)**2, axis=1)) for t in targets)
-
 
 # Cost function
 def cost(p_inner_flat, targets):
@@ -165,18 +207,10 @@ c0[:, 2] = np.linspace(0, L, N)
 lam = 0.030
 intermediary_shapes, sigma, K = isg_3d(c0, s_desired, lam)
 
-targets_init = np.column_stack([
-    np.zeros(len(targets_final)),
-    np.zeros(len(targets_final)),
-    targets_final[:, 2]
-])
-
 N_steps = len(intermediary_shapes)
 
-# Initial condition
 x = c0[2:].flatten()
 t_start = time.time()
-
 for k in range(N_steps):
     alpha = (k + 1) / N_steps
     targets_k = (1 - alpha) * targets_init + alpha * targets_final
@@ -204,7 +238,7 @@ p_final[2:] = x.reshape((N-2, 3))
 
 print_tip_pose(p_final, p_encas)
 
-
+# Visualization
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 
@@ -227,6 +261,6 @@ plt.savefig("mass_spring_result.png", dpi=150)
 plt.show()
 
 # Save
-np.savez('resultats_mass_spring.npz',
+np.savez('mass_spring_results.npz',
          p       = p_final,
          targets = targets_final)
