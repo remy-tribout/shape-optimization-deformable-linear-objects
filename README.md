@@ -212,3 +212,9 @@ Each script currently contains the model parameters and target points directly i
 [3] A. Govoni et al., *Performance Analysis of a Mass-Spring-Damper DLO Model in Robotic Simulation Frameworks*, arXiv, 2025.
 
 [4] K. Almaghout et al., *Robotic co-manipulation of deformable linear objects for large deformation tasks*, Robotics and Autonomous Systems, 2024.
+
+[5] F. Surmont, D. Coache et al., Geometrically exact static 3D Cosserat rods problem solved using a shooting method, International Journal of Non-Linear Mechanics, 2020, 119, 103330.
+
+[6] Y. Yu, H. Yang, J. Tan, X. Wang, A Hybrid Force-Position Strategy for Shape Control of Deformable Linear Objects With Graph Attention Networks, 2023.
+
+[7] C. Alessi, C. Agabiti, D. Caradonna, C. Laschi, F. Renda, E. Falotico et al., Rod models in continuum and soft robot control: a review, SAGE Journals, 2024, 1–31, doi:10.1177/ToBeAssigned.
