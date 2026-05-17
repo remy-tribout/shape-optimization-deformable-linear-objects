@@ -175,7 +175,9 @@ The goal is to obtain an optimization algorithm faster than Cosserat alone, whil
 |   `-- robot_pose_from_cosserat.png
 |-- src/
 |   |-- cosserat.py
-|   `-- mass_spring.py
+|   |-- mass_spring.py
+|   |-- comparison.py
+|   `-- robot_arm.py
 `-- README.md
 ```
 
