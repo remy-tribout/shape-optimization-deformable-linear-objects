@@ -224,3 +224,7 @@ Each script currently contains the model parameters and target points directly i
 [6] Y. Yu, H. Yang, J. Tan, X. Wang, A Hybrid Force-Position Strategy for Shape Control of Deformable Linear Objects With Graph Attention Networks, 2023.
 
 [7] C. Alessi, C. Agabiti, D. Caradonna, C. Laschi, F. Renda, E. Falotico et al., Rod models in continuum and soft robot control: a review, SAGE Journals, 2024, 1–31, doi:10.1177/ToBeAssigned.
+
+[8] M. Herrmann and P. Kotyczka, Relative-Kinematic Formulation of Geometrically Exact Beam Dynamics Based on Lie Group Variational Integrators, Computer Methods in Applied Mechanics and Engineering, 2024.
+
+[9] L. Pfeiffer, Model-Based State Estimation and Control of Continuum Manipulators: Design and Experimental Evaluation, Master's Thesis, TUM, 2025.
