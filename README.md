@@ -18,6 +18,12 @@ The current objective is to use the simplified model as a **warm start** for the
 
 ---
 
+## Project Structure
+
+A concise project structure note is provided in [`docs/project_structure.pdf`](docs/project_structure.pdf). It summarizes the planned scope of the research practice, including the baseline rod optimization approach, the possible integration of the MATLAB toolbox, the use of simplified models for initialization, and the evaluation criteria.
+
+---
+
 ## Current State of the Project
 
 Two shape optimization pipelines have been implemented:
