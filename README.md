@@ -1,4 +1,4 @@
-# Efficient Shape Optimization of Deformable Linear Objects Using Simplified Models
+# Model-Based Shape Optimization of Deformable Linear Objects via Robotic Manipulation
 
 **Research Practice - Technical University of Munich**  
 Remy Tribout - April 2026
