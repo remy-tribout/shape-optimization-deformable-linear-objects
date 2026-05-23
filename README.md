@@ -1,7 +1,7 @@
 # Model-Based Shape Optimization of Deformable Linear Objects via Robotic Manipulation
 
 **Research Practice - Technical University of Munich**  
-Remy Tribout - April 2026
+Remy Tribout - May 2026
 
 ---
 
